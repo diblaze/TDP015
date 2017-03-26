@@ -75,8 +75,6 @@ class Nega(Exp):
         return \
             not self.sexps[0].value(assignment)
 
-    # TODO: Complete this class
-
 class Conj(Exp):
     """Logical and."""
 
@@ -98,8 +96,6 @@ class Disj(Exp):
         assert len(self.sexps) == 2
         return \
             self.sexps[0].value(assignment) or self.sexps[1].value(assignment)
-
-    # TODO: Complete this class
 
 class Impl(Exp):
     """Logical implication."""
@@ -144,6 +140,10 @@ def assignments(variables):
     """
     # TODO: Complete this function. Use the itertools module!
 
+    for combination in itertools.product([True, False], repeat=len(variables)):
+        yield combination        
+    
+
 def satisfiable(exp):
     """Tests whether the specified expression is satisfiable.
 
@@ -159,7 +159,17 @@ def satisfiable(exp):
         A truth assignment is represented as a dictionary mapping variable
         names to truth values.
     """
-    # TODO: Complete this function
+    #Get the variables for the expression
+    keys = set(exp.variables())
+
+    for combination in itertools.product([True, False], repeat=len(keys)):
+        values = {}
+        for assignment in combination:
+            for key in keys:
+                values[key] = assignment
+        if exp.value(values):
+            return values
+    return False
 
 def tautology(exp):
     """Tests whether the specified expression is a tautology.
@@ -189,6 +199,7 @@ def equivalent(exp1, exp2):
         True if the specified expressions are equivalent, False otherwise.
     """
     # TODO: Complete this function
+
 
 
 def test1():
