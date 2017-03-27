@@ -1,5 +1,5 @@
 import itertools
-import unittest
+
 
 
 class Exp(object):
@@ -131,8 +131,6 @@ class Equi(Exp):
         return \
             (self.sexps[0].value(assignment) == self.sexps[1].value(assignment))
 
-    # TODO: Complete this class
-
 
 def assignments(variables):
     """Yields all truth assignments to the specified variables.
@@ -147,8 +145,6 @@ def assignments(variables):
 
         {'x': True, 'y': False}
     """
-    # TODO: Complete this function. Use the itertools module!
-
     for combination in itertools.product([True, False], repeat=len(variables)):
         yield dict(zip(variables, combination))
 
@@ -169,8 +165,8 @@ def satisfiable(exp):
         names to truth values.
     """
 
-    for i in assignments(exp.variables):
-        if exp.value(i):
+    for i in assignments(exp.variables()):
+        if exp.value(i) == True:
             return i
     return False
 
@@ -187,7 +183,10 @@ def tautology(exp):
     Returns:
         True if the specified expression is a tautology, False otherwise.
     """
-    # TODO: Complete this function
+    for i in assignments(exp.variables()):
+        if exp.value(i) == False:
+            return False
+    return True
 
 
 def equivalent(exp1, exp2):
@@ -238,8 +237,47 @@ def testEquivalent2():
     return equivalent(exp1, exp2)
 
 
+def testSatisfiable1():
+    p = Var('p')
+    # Will always be true, but at least it is satisfiable!
+    exp1 = Disj(p, Nega(p))
+    truthAssigments = satisfiable(exp1)
+    if truthAssigments == False:
+        return False
+    else:
+        return True
+
+def testSatisfiable2():
+    p = Var('p')
+
+    exp1 = Conj(p, Nega(p))
+    truthAssigments = satisfiable(exp1)
+    if truthAssigments == False:
+        return False
+    else:
+        return True
+
+def testTautology1():
+    p = Var('p')
+
+    exp1 = Disj(Nega(p), p)
+    return tautology(exp1)
+
+
 if __name__ == "__main__":
     print("Equivalent test 1")
     assert testEquivalent1() == False
     print("Equivalent test 2")
     assert testEquivalent2() == True
+
+    print("----------")
+
+    print("Satisfiable test 1")
+    assert testSatisfiable1() == True
+    print("Satisfiable test 2")
+    assert testSatisfiable2() == False
+
+    print("----------")
+
+    print("Tautology test 1")
+    assert testTautology1() == True
