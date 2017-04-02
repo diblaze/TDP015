@@ -59,7 +59,6 @@ def test_subset():
 
 def equal(s, t):
     """Test whether *s* and *t* are equals (as sets)."""
-    # TODO: Replace the following line with your own code
     if s != t:
         return False
     return True
@@ -75,8 +74,12 @@ def test_equal():
 
 def proper_subset(s, t):
     """Test whether *s* is a proper subset of *t*."""
-    #TODO: Replace the following line with your own code
-    return False
+    for i in s:
+        if i not in t:
+            return False
+    if s == t:
+        return False
+    return True
 
 def test_proper_subset():
     print("test_proper_subset")
@@ -89,8 +92,10 @@ def test_proper_subset():
 
 def disjoint(s, t):
     """Test whether *s* and *t* are disjoint."""
-    # TODO: Replace the following line with your own code
-    return False
+    for i in s:
+        if i in t:
+            return False
+    return True
 
 def test_disjoint():
     print("test_disjoint")
@@ -108,8 +113,16 @@ def test_disjoint():
 
 def subsets(s):
     """Yields the subsets of the set *s*."""
-    # TODO: Replace the following line with your own code
-    yield None
+    # This one took me a while. Never worked with bitwise operators before, but it was a huge help in Part 3.
+    
+    # Cast to [] because [] supports indexing - better because I can use an easy "for i in range" and set comprehension
+    s = list(s)
+    x = len(s)
+    for i in range(1 << x):
+        # Checks if 'i' and 'j' have the same bit output - doable by using "bitwise and" (&) and by using the "<<" operator
+        # to shift j bits to 1 (the same as multipying 1 by 2**j)
+        # If it is true, then yield the combo
+        yield {s[j] for j in range(x) if (i & (1 << j))}
 
 def test_subsets():
     print("test_subsets")
