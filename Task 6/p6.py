@@ -53,6 +53,11 @@ def cyclic(graph):
     # Idea to color nodes as visited gotten from:
     # http://stackoverflow.com/questions/28913762/vertex-coloring-with-dfs
 
+    # Inspiration: http://eddmann.com/posts/depth-first-search-and-breadth-first-search-in-python/
+    # No code was taken from the website, but the general idea of how to do a DFS was absorbed.
+    # I made the algorithm be recursive, instead of using while loops etc.
+    # Recursive is nicer, but could potentially reach max recursive limit in Python.
+
     # I will be using the depth-first search algorithm.
     # Which works by initializing two dictionaries, one that holds visited nodes,
     # and the second one that holds colors for specific nodes (i.e the graph).
