@@ -1,4 +1,8 @@
 # TDP015 Programming Assignment 6
+import json
+import time
+from pprint import pprint
+
 
 # In one of my current research projects, I am developing algorithms
 # for the parsing of natural language to meaning representations in
@@ -30,6 +34,7 @@
 # their ids) to lists of neighbouring vertices.
 
 
+# RECURSIVE
 def cyclic(graph):
     """Test whether the directed graph `graph` has a (directed) cycle.
 
@@ -44,7 +49,9 @@ def cyclic(graph):
     Returns:
         `True` if the directed graph `graph` has a (directed) cycle.
     """
-    # TODO: Replace the following line with your own code.
+
+    # Idea to color nodes as visited gotten from:
+    # http://stackoverflow.com/questions/28913762/vertex-coloring-with-dfs
 
     # I will be using the depth-first search algorithm.
     # Which works by initializing two dictionaries, one that holds visited nodes,
@@ -58,60 +65,89 @@ def cyclic(graph):
 
     # init the dict
     color = {}
-    cycle = False
+    # apperntly Python doesn't pass reference as other langauges... but it can
+    # pass Objects perfectly (value by reference)
+    cycle  = [False]
+
+    # set all nodes to unvisisted
     for node in graph:
-        color[node] = "white"
+        color[node] = "non-visited"
 
-    def visit(node, graph, cycle, color):
-        if cycle == True:
-            return cycle
-        color[node] = "grey"
-        for neighbor in graph[node]:
-            if color[neighbor] == "grey":
-                cycle = True
-                return cycle
-            if color[neighbor] == "white":
-                return visit(neighbor, graph, cycle, color)
-        color[node] = "black"
+    def visit(node, graph, cycle, color):  # don't hate me for doing a function inside of a function :D
+        color[node] = "visited"  # set current node to visited
+        for neighbor in graph[node]:  # check all neighbors to the current node
+            if color[neighbor] == "visited":  # have we visited it already?
+                cycle[0] = True  # cycle found
+                return  # jump out of function because we found a cyclic graph
+            elif color[neighbor] == "non-visited":  # if we havent visited the neighbor
+                # visit it and check its neighbors
+                visit(neighbor, graph, cycle, color)
+        # mark node as black, to indicate that we have been here, but we can
+        # still run the search.
+        color[node] = "again"
 
-    for node in graph:
-        if color[node] == "white":
-            cycle = visit(node, graph, cycle, color)
-        if cycle:
-            return cycle
+    for node in graph:  # go through each node in the given graph
+        if color[node] == "non-visited":  # if not visited
+            visit(node, graph, cycle, color)  # visit
 
-    if cycle == None:  # not really sure why it returns None... Can't find the issue
-        cycle = False
-    return cycle
+    return cycle[0]  # no cycle found, return false
 
 
 if __name__ == "__main__":
-    graph_example_true1 = {0: [1],
-                           1: [2],
-                           2: [3],
-                           3: [4],
-                           4: [1]}
-    graph_example_false1 = {0: [1, 2],
-                            1: [2],
-                            2: []}
-    graph_example_true2 = {0: [1, 2],
-                           1: [],
-                           2: [3],
-                           3: [4],
-                           4: [2]}
-    graph_example_false2 = {0: [],
-                            1: [],
-                            2: [],
-                            3: []}
+    graph_example_true1 = {'0': ['1'],
+                           '1': ['2'],
+                           '2': ['3'],
+                           '3': ['4'],
+                           '4': ['1']}
+    graph_example_false1 = {'0': ['1', '2'],
+                            '1': ['2'],
+                            '2': []}
+    graph_example_true2 = {'0': ['1', '2'],
+                           '1': [],
+                           '2': ['3'],
+                           '3': ['4'],
+                           '4': ['2']}
+    graph_example_false2 = {'0': [],
+                            '1': [],
+                            '2': [],
+                            '3': []}
 
-    print(cyclic(graph_example_true1))
+    #Test cases to make sure it is working  - START    
+    #print(cyclic(graph_example_true1))
     assert(cyclic(graph_example_true1) == True)
 
-    print(cyclic(graph_example_false1))
+    #print(cyclic(graph_example_false1))
     assert(cyclic(graph_example_false1) == False)
 
-    print(cyclic(graph_example_true2))
+    #print(cyclic(graph_example_true2))
     assert(cyclic(graph_example_true2) == True)
 
-    print(cyclic(graph_example_false2))
+    #print(cyclic(graph_example_false2))
     assert(cyclic(graph_example_false2) == False)
+    #Test cases to make sure it is working  - END  
+
+    graph_data = {}
+    #read all json into one big dict
+    with open('./ccg.train.json') as data:
+        graph_data = json.load(data)
+
+    ids = []
+    start = time.time()
+    #go through each graph
+    for graph in graph_data:
+        #check if it is cyclic
+        g = graph_data[graph] 
+        if cyclic(g): #couldnt send graph_data directly to cyclic for some reason, got error, thats why I assign to 'g'.
+            #if cyclic, then append the id to the list.
+            ids.append(graph)
+        else:
+            continue
+    end = time.time()
+    
+    #print each ID as the task said
+    for id in ids:
+        pprint(id)
+    
+    print("The search algorithm took: " + str(end-start) + " seconds to complete.") #average ~= 0.36s
+    print(str(len(graph_data)) + " number of graphs.")
+    print(str(len(ids)) + " number of cyclic graphs")
