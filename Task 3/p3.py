@@ -40,6 +40,12 @@
 # 1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796, 58786, 208012, 742900,
 # 2674440, 9694845, 35357670, 129644790, 477638700, 1767263190, ...
 
+
+# ## Formlen som användes i uppgiften:
+# Rekursiva formulen för Catalan Nummer: https://wikimedia.org/api/rest_v1/media/math/render/svg/1a167516f8d0fca52ddb4ab5ae70267dac803692
+# 
+
+
 # ## Problem 1
 #
 # Implement a function nested_pairs() that yields all nested pairs
@@ -48,6 +54,8 @@
 # listed above. Use recursion. Test your function by counting the
 # number of nested pairs yielded by it and comparing against the
 # sequence of numbers given above.
+
+
 
 def nested_pairs(n):
     """Yield all nested pairs with degree *n*."""
@@ -76,6 +84,7 @@ def nested_pairs(n):
 # your numbers to the numbers that you got above. What is the maximal
 # degree for which you can compute the number of nested pairs in under
 # one minute?
+
 
 def count_nested_pairs(n):
     """Count the number of nested pairs with degree *n*."""
