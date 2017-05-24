@@ -43,7 +43,7 @@
 
 # ## Formlen som användes i uppgiften:
 # Rekursiva formulen för Catalan Nummer: https://wikimedia.org/api/rest_v1/media/math/render/svg/1a167516f8d0fca52ddb4ab5ae70267dac803692
-# 
+#
 
 
 # ## Problem 1
@@ -56,20 +56,21 @@
 # sequence of numbers given above.
 
 
-
 def nested_pairs(n):
     """Yield all nested pairs with degree *n*."""
-    if(n <= 1):
+    if n <= 1:
         yield ()
 
     for i in range(1, n):
         for x in nested_pairs(i):
-            for y in nested_pairs(i-1):
-                yield(x,y)
+            # this was the issue. (n-1) gives the wrong amount of tuples.
+            # Should be (n-i)
+            for y in nested_pairs(n - i):
+                yield(x, y)
 
-
-#for i in nested_pairs(3):
-#    print(i)
+# ## Test
+# for i in nested_pairs(3):
+#   print(i)
 
 
 # ## Problem 2
@@ -88,17 +89,23 @@ def nested_pairs(n):
 
 def count_nested_pairs(n):
     """Count the number of nested pairs with degree *n*."""
-    if(n <= 1):
+
+    if n <= 1:
         return 1
 
     result = 0
-    for i in range(n):
-        result += count_nested_pairs(i) * count_nested_pairs(n-i-1)
+    for i in range(1, n):
+        # issue was here too, the range should be (1, n) not (n).
+        # and the result should not add 1 to the nested_pairs. This made it
+        # non-zero indexed.
+        result += count_nested_pairs(i) * count_nested_pairs(n - i)
 
     return result
 
-#for i in range(20):
-#   print(count_nested_pairs(i))
+# ## Test
+# for i in range(7):
+    #print("i: " + str(i) + " - pairs: " + str(count_nested_pairs(i)))
+# print(count_nested_pairs(6))
 
 # ## Problem 3
 #
@@ -122,17 +129,22 @@ def count_nested_pairs(n):
 # compute the number of nested pairs for the maximal degree that you
 # could do in under one minute in Problem 2?
 
+
 memorized = {}
+
+
 def count_nested_pairs_memoized(n):
-    if(n <= 1):
+    if n <= 1:
         return 1
-    
+
     res = 0
     if n not in memorized:
-        for i in range(n):
-            res += count_nested_pairs_memoized(i) * count_nested_pairs_memoized(n-i-1)
+        for i in range(1, n):
+            res += count_nested_pairs_memoized(i) * \
+                count_nested_pairs_memoized(n - i)
         memorized[n] = res
     return memorized[n]
 
-#for i in range(20):
-#    print(count_nested_pairs_memoized(i))
+# ## Test
+# for i in range(100):
+#    print("i: " + str(i) + " - number: " + str(count_nested_pairs_memoized(i)))
